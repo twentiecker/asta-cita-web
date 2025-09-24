@@ -1,5 +1,7 @@
 <template>
-  <div class="card p-6">
+  <div
+    class="card mx-6 pl-4 py-3 sticky top-0 z-50 bg-[var(--p-panel-background)] m-2 rounded-lg"
+  >
     <Drawer v-model:visible="visible">
       <template #container="{ closeCallback }">
         <div class="flex flex-col h-full">
@@ -169,10 +171,4 @@ import { RouterLink, RouterView } from "vue-router";
 import { ref } from "vue";
 
 const visible = ref(false);
-const items = ref([
-  {
-    label: "ASTA CITA",
-    icon: "pi pi-home",
-  },
-]);
 </script>

@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { allData, allIndikator } from "@/utils/data";
+import ExpandableText from "@/components/ExpandableText.vue";
 
 onMounted(() => {
   chartData.value = setChartData();
@@ -107,9 +108,9 @@ const setChartData = () => {
         borderColor: "#156082",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         tension: 0.3,
-        borderWidth: 8,
+        borderWidth: 7,
         pointStyle: "rectRot",
-        pointRadius: 5,
+        pointRadius: 4,
       },
       {
         label: "Aspek Kebebasan Sipil / Aspek Kebebasan",
@@ -168,6 +169,9 @@ const setChartOptions = () => {
             });
           },
         },
+      },
+      datalabels: {
+        display: false,
       },
     },
     scales: {
@@ -294,6 +298,9 @@ const setbarChartOptions = () => {
         labels: {
           color: textColor,
         },
+      },
+      datalabels: {
+        display: false,
       },
     },
     scales: {
@@ -430,6 +437,17 @@ const setChartOptionsIndikator = () => {
           color: textColor,
         },
       },
+      datalabels: {
+        color: (context) => {
+          return context.dataset.borderColor; // ikut warna garis dataset
+        },
+        anchor: "end", // posisinya relatif ke titik (end = atas)
+        align: "end", // geser keluar ke atas
+        offset: 4, // kasih jarak biar ga nabrak titik
+        font: {
+          weight: "bold",
+        },
+      },
     },
     scales: {
       x: {
@@ -437,15 +455,21 @@ const setChartOptionsIndikator = () => {
           color: textColorSecondary,
         },
         grid: {
-          color: surfaceBorder,
+          display: false,
+          drawBorder: true,
+        },
+        border: {
+          display: true,
+          color: surfaceBorder, // warna garis bawah
+          width: 2,
         },
       },
       y: {
         ticks: {
-          color: textColorSecondary,
+          display: false,
         },
         grid: {
-          color: surfaceBorder,
+          display: false,
         },
       },
     },
@@ -463,7 +487,7 @@ const setChartOptionsIndikator = () => {
       pt:root:class="!border-0"
     >
       <h1 class="text-xl mb-3">
-        Memperkokoh Ideologi Pancasila, Demokrasi, dan Hak Asasi Manusia
+        Memperkokoh Ideologi Pancasila, Demokrasi, dan Hak Asasi Manusia.
       </h1>
       <p class="m-0 leading-relaxed">
         Di tengah tantangan era global, pengukuhan Pancasila sebagai fondasi
@@ -478,7 +502,7 @@ const setChartOptionsIndikator = () => {
   </div>
 
   <!-- Card Indeks -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 px-6">
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12 px-6">
     <Card
       v-for="(item, index) in indikatorCards"
       :key="index"
@@ -500,8 +524,53 @@ const setChartOptionsIndikator = () => {
     </Card>
   </div>
 
+  <!-- Analisis IDI -->
+  <div class="card p-6">
+    <h1 class="text-xl mb-6 text-center font-semibold">
+      Analisis Indeks Demokrasi Indonesia dan Aspek Demokrasi
+    </h1>
+    <ExpandableText
+      summary="Penurunan Indeks Demokrasi Indonesia 2023 lebih disebabkan oleh melemahnya aspek kebebasan dan efektivitas lembaga demokrasi, bukan pada dimensi kesetaraan."
+    >
+      <template #details>
+        <ul>
+          <li class="mb-2">
+            Nilai Indeks Demokrasi Indonesia nasional pada tahun 2023 sebesar
+            79,51, sedikit menurun dari 2022 (80,41). Tren Indeks Demokrasi
+            Indonesia menunjukkan kenaika sejak 2013, namun stagnan-fluktuatif
+            dalam 5 tahun terakhir.
+          </li>
+          <li>
+            Aspek yang berkontribusi pada penurunan Indeks Demokrasi Indonesia
+            2023:
+            <ul>
+              <li>
+                a. Aspek kebebasan turun menjadi 77,48 (dari 82,8 tahun 2022).
+                Indikator yang paling memengaruhi: kebebasan pers, kebebasan
+                berkeyakinan, serta hak untuk menyampaikan pendapat.
+              </li>
+              <li>
+                b. Aspek Kapasitas Lembaga Demokrasi juga turun menjadi 76,46
+                (dari 78,22 tahun 2022). Penurunan kecil tapi konsisten seiring
+                dengan melemahnya kinerja legislatif.
+              </li>
+            </ul>
+          </li>
+          <li>
+            c. Aspek Kesetaraan justru naik signifikan ke 83,74 (dari 80,28).
+            Faktor yang mendukung diantaranya, meningkatnya partisipasi politik,
+            akses keadilan melalui PTUN, dan jaminan sosial.
+          </li>
+        </ul>
+      </template>
+    </ExpandableText>
+  </div>
+
   <!-- Chart Line -->
-  <div class="card rounded-xl shadow-md m-6 p-6 mb-8 animate-fadeIn">
+  <div class="card rounded-xl shadow-md p-6 mb-6 animate-fadeIn">
+    <h1 class="text-xl mb-6 text-center font-semibold">
+      Indeks Demokrasi Indonesia dan Aspek Demokrasi
+    </h1>
     <div class="flex justify-between mb-4">
       <Select
         v-model="selectedRegion"
@@ -524,10 +593,59 @@ const setChartOptionsIndikator = () => {
       class="h-[30rem]"
     />
     <p class="text-sm mt-2 italic">Sumber: Badan Pusat Statistik (BPS)</p>
+    <p class="text-sm">
+      Keterangan: Sejak tahun 2021, BPS menggunakan metode baru dalam
+      penghitungan Indeks Demokrasi Indonesia beserta Aspek-aspek Demokrasinya.
+    </p>
+  </div>
+
+  <!-- Analisis Spasial -->
+  <div class="card p-6">
+    <h1 class="text-xl mb-6 text-center font-semibold">
+      Analisis Spasial Indeks Demokrasi Indonesia
+    </h1>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      <ExpandableText
+        summary="Jawa & Bali memiliki capaian demokrasi paling stabil dan unggul
+          dibanding wilayah lain."
+      >
+        <template #details
+          >Demokrasi paling kuat di Indonesia, ditopang oleh kebebasan sipil
+          yang tinggi, hak politik yang konsisten, dan kelembagaan demokrasi
+          yang relatif stabil.
+        </template>
+      </ExpandableText>
+      <ExpandableText
+        summary="Kalimantan dan Sumatera: demokrasi cukup stabil tapi belum
+          merata."
+      >
+        <template #details>
+          Demokrasi relatif stabil, ditunjukkan oleh capaian indeks demokrasi
+          yang konsisten tinggi di Kalimantan serta kekuatan hak politik di
+          Sumatera Utara dan Sumatera Barat, meski beberapa provinsi seperti
+          Bengkulu, Lampung, dan Sumatera Selatan masih moderat terutama pada
+          aspek kebebasan sipil dan kelembagaan.
+        </template>
+      </ExpandableText>
+      <ExpandableText
+        summary="Wilayah Timur (Sulawesi, Nusa Tenggara, Maluku, Papua) menghadapi
+          tantangan serius."
+      >
+        <template #details>
+          Demokrasi berada pada level menengah hingga lemah, dengan Sulawesi
+          relatif lebih baik meski bervariasi antarprovinsi, sedangkan NTB,
+          Maluku, dan Papua menghadapi tantangan besar terutama dalam
+          kelembagaan demokrasi dan kebebasan sipil.
+        </template>
+      </ExpandableText>
+    </div>
   </div>
 
   <!-- Chart Bar -->
-  <div class="card rounded-xl shadow-md m-6 p-6 mb-8 animate-fadeIn">
+  <div class="card rounded-xl shadow-md p-6 mb-6 animate-fadeIn">
+    <h1 class="text-xl mb-6 text-center font-semibold">
+      {{ selectedAspect.name }} menurut Provinsi
+    </h1>
     <div class="flex flex-wrap justify-between mb-4">
       <div>
         <Select
@@ -561,129 +679,272 @@ const setChartOptionsIndikator = () => {
     <p class="text-sm mt-2 italic">Sumber: Badan Pusat Statistik (BPS)</p>
   </div>
 
-  <!-- Cards Grid -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 px-6 py-6">
-    <Card
-      v-for="(item, index) in cards"
-      :key="index"
-      @click="openDialog(item)"
-      class="cursor-pointer hover:shadow-xl hover:scale-[1.03] transition-transform duration-300 rounded-xl"
-      :class="
-        (!item.pusat && item.growthProv === 0.0) ||
-        (item.growthPusat === 0.0 && !item.provinsi) ||
-        (item.growthPusat === 0.0 && item.growthProv === 0.0)
-          ? ''
-          : (item.isUpPusat && item.isUpProv) || (!item.pusat && item.isUpProv)
-          ? '!bg-green-500'
-          : (!item.isUpPusat && item.isUpProv) ||
-            (item.isUpPusat && !item.isUpProv)
-          ? '!bg-orange-500'
-          : (!item.isUpPusat && !item.isUpProv) ||
-            (!item.pusat && !item.isUpProv)
-          ? '!bg-red-500'
-          : ''
-      "
-      pt:body:class="h-full flex flex-col justify-between"
-    >
-      <template #subtitle>
-        <span class="font-medium dark:text-white">{{ item.title }}</span>
-      </template>
-      <template #content class="h-full">
-        <div class="relative flex justify-around mt-3 text-center lg:static">
-          <div class="mr-10 lg:m-0">
-            <h1 class="font-medium">Pusat</h1>
-            <p class="m-0 text-lg font-bold">
-              {{ item.pusat ?? "-" }}
-            </p>
-            <span class="flex justify-between items-center">
-              <i
-                :class="
-                  !item.pusat || item.growthPusat === 0.0
-                    ? 'pi pi-sort-up-fill rotate-90'
-                    : item.isUpPusat
-                    ? 'pi pi-sort-up-fill text-green-800'
-                    : 'pi pi-sort-down-fill text-red-800'
-                "
-                class="mr-1"
-                style="font-size: 1rem"
-              ></i>
-              <p
-                class="m-1 font-bold"
-                :class="
-                  !item.pusat || item.growthPusat === 0.0
-                    ? ''
-                    : item.isUpPusat
-                    ? 'text-green-800'
-                    : 'text-red-800'
-                "
-              >
-                {{
-                  item.growthPusat !== null
-                    ? item.growthPusat.toFixed(2) + "%"
-                    : "-"
-                }}
-              </p>
-            </span>
-          </div>
-          <div class="ml-10 lg:m-0">
-            <h1 class="font-medium">Provinsi</h1>
-            <p class="mr-0 text-lg font-bold">
-              {{ item.provinsi ?? "-" }}
-            </p>
-            <span class="flex justify-between items-center">
-              <i
-                :class="
-                  !item.provinsi || item.growthProv === 0.0
-                    ? 'pi pi-sort-up-fill rotate-90'
-                    : item.isUpProv
-                    ? 'pi pi-sort-up-fill text-green-800'
-                    : 'pi pi-sort-down-fill text-red-800'
-                "
-                class="ml-1"
-                style="font-size: 1rem"
-              ></i>
-              <p
-                class="m-1 font-bold"
-                :class="
-                  !item.provinsi || item.growthProv === 0.0
-                    ? ''
-                    : item.isUpProv
-                    ? 'text-green-800'
-                    : 'text-red-800'
-                "
-              >
-                {{
-                  item.growthProv !== null
-                    ? item.growthProv.toFixed(2) + "%"
-                    : "-"
-                }}
-              </p>
-            </span>
-          </div>
-          <i
-            :class="item.icon"
-            class="absolute lg:static lg:!hidden"
-            style="font-size: 2rem"
-          ></i>
-        </div>
-      </template>
-    </Card>
+  <!-- Analisis Indikator -->
+  <div class="card p-6">
+    <h1 class="text-xl mb-6 text-center font-semibold">
+      Analisis Indikator Indeks Demokrasi Indonesia
+    </h1>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      <ExpandableText
+        summary="Tren melemah pada sebagian besar indikator demokrasi."
+      >
+        <template #details
+          >Dari 22 indikator, sebanyak 8 indikator mengalami penurunan, 6
+          meningkat, 7 menunjukkan sinyal berbeda antara pusat dan provinsi, dan
+          1 stagnan. Ini merupakan sinyal pelemahan pada sebagian besar
+          indikator demokrasi dan tata kelola.
+        </template>
+      </ExpandableText>
+      <ExpandableText
+        summary="Kesenjangan indikator demokrasi pusat vs provinsi."
+      >
+        <template #details>
+          Terlihat adanya perbedaan arah tren, misalnya akses informasi publik
+          meningkat di provinsi tetapi menurun di pusat.</template
+        >
+      </ExpandableText>
+      <ExpandableText
+        summary="Kemajuan pada aspek hukum dan sosial, namun tantangan besar pada
+          kebebasan sipil dan politik."
+      >
+        <template #details
+          >Peningkatan yang patut diapresiasi terdapat pada putusan PTUN dan
+          jaminan sosial bagi warga miskin, karena berkaitan langsung dengan
+          keadilan hukum dan perlindungan kelompok rentan. Sebaliknya, penurunan
+          tajam pada kebebasan pers, kebebasan berkeyakinan, kinerja legislatif,
+          birokrasi publik, serta pendidikan politik partai perlu diwaspadai
+          karena berpotensi menggerus kualitas demokrasi dan partisipasi
+          publik.</template
+        >
+      </ExpandableText>
+    </div>
+  </div>
 
-    <!-- Dialog Chart -->
-    <Dialog
-      v-model:visible="visible"
-      modal
-      :header="selectedGrafik?.label"
-      :style="{ width: '50rem' }"
-      class="rounded-xl"
-    >
-      <Chart
-        type="line"
-        :data="chartDataIndikator"
-        :options="chartOptionsIndikator"
-        class="h-[30rem]"
-      />
-    </Dialog>
+  <!-- Cards Grid with Flexbox -->
+  <div class="card p-6">
+    <h1 class="text-xl mb-6 text-center font-semibold">
+      22 Indikator Indeks Demokrasi Indonesia
+    </h1>
+    <div class="flex flex-wrap justify-center gap-6">
+      <Card
+        v-for="(item, index) in cards"
+        :key="index"
+        @click="openDialog(item)"
+        class="cursor-pointer hover:shadow-xl hover:scale-[1.03] transition-transform duration-300 rounded-xl w-full sm:w-[calc(50%-1.5rem)] lg:w-[calc(20%-1.5rem)]"
+        :class="
+          (!item.pusat && item.growthProv === 0.0) ||
+          (item.growthPusat === 0.0 && !item.provinsi) ||
+          (item.growthPusat === 0.0 && item.growthProv === 0.0)
+            ? ''
+            : (item.isUpPusat && item.isUpProv) ||
+              (!item.pusat && item.isUpProv)
+            ? '!bg-green-300'
+            : (!item.isUpPusat && item.isUpProv) ||
+              (item.isUpPusat && !item.isUpProv)
+            ? '!bg-orange-300'
+            : (!item.isUpPusat && !item.isUpProv) ||
+              (!item.pusat && !item.isUpProv)
+            ? '!bg-red-300'
+            : ''
+        "
+        pt:body:class="h-full flex flex-col justify-between"
+      >
+        <template #subtitle>
+          <span
+            class="flex justify-center text-center font-medium"
+            :class="
+              (!item.pusat && item.growthProv === 0.0) ||
+              (item.growthPusat === 0.0 && !item.provinsi) ||
+              (item.growthPusat === 0.0 && item.growthProv === 0.0)
+                ? ''
+                : (item.isUpPusat && item.isUpProv) ||
+                  (!item.pusat && item.isUpProv) ||
+                  (!item.isUpPusat && item.isUpProv) ||
+                  (item.isUpPusat && !item.isUpProv) ||
+                  (!item.isUpPusat && !item.isUpProv) ||
+                  (!item.pusat && !item.isUpProv)
+                ? 'text-black'
+                : ''
+            "
+            >{{ item.title }}</span
+          >
+        </template>
+        <template #content class="h-full">
+          <div class="relative flex justify-around mt-3 text-center lg:static">
+            <div v-if="item.pusat" class="mr-10 lg:m-0">
+              <h1
+                class="font-medium"
+                :class="
+                  (!item.pusat && item.growthProv === 0.0) ||
+                  (item.growthPusat === 0.0 && !item.provinsi) ||
+                  (item.growthPusat === 0.0 && item.growthProv === 0.0)
+                    ? ''
+                    : (item.isUpPusat && item.isUpProv) ||
+                      (!item.pusat && item.isUpProv) ||
+                      (!item.isUpPusat && item.isUpProv) ||
+                      (item.isUpPusat && !item.isUpProv) ||
+                      (!item.isUpPusat && !item.isUpProv) ||
+                      (!item.pusat && !item.isUpProv)
+                    ? 'text-black'
+                    : ''
+                "
+              >
+                Pusat
+              </h1>
+              <p
+                class="m-0 text-lg font-bold"
+                :class="
+                  (!item.pusat && item.growthProv === 0.0) ||
+                  (item.growthPusat === 0.0 && !item.provinsi) ||
+                  (item.growthPusat === 0.0 && item.growthProv === 0.0)
+                    ? ''
+                    : (item.isUpPusat && item.isUpProv) ||
+                      (!item.pusat && item.isUpProv) ||
+                      (!item.isUpPusat && item.isUpProv) ||
+                      (item.isUpPusat && !item.isUpProv) ||
+                      (!item.isUpPusat && !item.isUpProv) ||
+                      (!item.pusat && !item.isUpProv)
+                    ? 'text-black'
+                    : ''
+                "
+              >
+                {{ item.pusat ?? "-" }}
+              </p>
+              <span class="flex justify-between items-center">
+                <i
+                  :class="
+                    !item.pusat || item.growthPusat === 0.0
+                      ? 'pi pi-sort-up-fill rotate-90 text-black'
+                      : item.isUpPusat
+                      ? 'pi pi-sort-up-fill text-green-800'
+                      : 'pi pi-sort-down-fill text-red-800'
+                  "
+                  class="mr-1"
+                  style="font-size: 1rem"
+                ></i>
+                <p
+                  class="m-1 font-bold"
+                  :class="
+                    !item.pusat || item.growthPusat === 0.0
+                      ? 'text-black'
+                      : item.isUpPusat
+                      ? 'text-green-800'
+                      : 'text-red-800'
+                  "
+                >
+                  {{
+                    item.growthPusat !== null
+                      ? item.growthPusat.toFixed(2) + "%"
+                      : "-"
+                  }}
+                </p>
+              </span>
+            </div>
+            <div v-if="item.provinsi" class="ml-10 lg:m-0">
+              <h1
+                class="font-medium"
+                :class="
+                  (!item.pusat && item.growthProv === 0.0) ||
+                  (item.growthPusat === 0.0 && !item.provinsi) ||
+                  (item.growthPusat === 0.0 && item.growthProv === 0.0)
+                    ? ''
+                    : (item.isUpPusat && item.isUpProv) ||
+                      (!item.pusat && item.isUpProv) ||
+                      (!item.isUpPusat && item.isUpProv) ||
+                      (item.isUpPusat && !item.isUpProv) ||
+                      (!item.isUpPusat && !item.isUpProv) ||
+                      (!item.pusat && !item.isUpProv)
+                    ? 'text-black'
+                    : ''
+                "
+              >
+                Provinsi
+              </h1>
+              <p
+                class="mr-0 text-lg font-bold"
+                :class="
+                  (!item.pusat && item.growthProv === 0.0) ||
+                  (item.growthPusat === 0.0 && !item.provinsi) ||
+                  (item.growthPusat === 0.0 && item.growthProv === 0.0)
+                    ? ''
+                    : (item.isUpPusat && item.isUpProv) ||
+                      (!item.pusat && item.isUpProv) ||
+                      (!item.isUpPusat && item.isUpProv) ||
+                      (item.isUpPusat && !item.isUpProv) ||
+                      (!item.isUpPusat && !item.isUpProv) ||
+                      (!item.pusat && !item.isUpProv)
+                    ? 'text-black'
+                    : ''
+                "
+              >
+                {{ item.provinsi ?? "-" }}
+              </p>
+              <span class="flex justify-between items-center">
+                <i
+                  :class="
+                    !item.provinsi || item.growthProv === 0.0
+                      ? 'pi pi-sort-up-fill rotate-90'
+                      : item.isUpProv
+                      ? 'pi pi-sort-up-fill text-green-800'
+                      : 'pi pi-sort-down-fill text-red-800'
+                  "
+                  class="ml-1"
+                  style="font-size: 1rem"
+                ></i>
+                <p
+                  class="m-1 font-bold"
+                  :class="
+                    !item.provinsi || item.growthProv === 0.0
+                      ? ''
+                      : item.isUpProv
+                      ? 'text-green-800'
+                      : 'text-red-800'
+                  "
+                >
+                  {{
+                    item.growthProv !== null
+                      ? item.growthProv.toFixed(2) + "%"
+                      : "-"
+                  }}
+                </p>
+              </span>
+            </div>
+            <i
+              :class="item.icon"
+              class="absolute lg:static lg:!hidden"
+              style="font-size: 2rem"
+            ></i>
+          </div>
+        </template>
+      </Card>
+
+      <!-- Dialog Chart -->
+      <Dialog v-model:visible="visible" modal pt:mask:class="backdrop-blur-sm">
+        <template #container="{ closeCallback }">
+          <div class="flex justify-end pr-2 pt-2">
+            <Button
+              icon="pi pi-times"
+              severity="danger"
+              rounded
+              variant="text"
+              aria-label="Cancel"
+              @click="closeCallback"
+            />
+          </div>
+          <div class="flex flex-col px-12 pb-6 rounded-2xl">
+            <p class="pb-6 w-[20rem] text-center font-semibold">
+              {{ selectedGrafik?.label }}
+            </p>
+            <Chart
+              type="line"
+              :data="chartDataIndikator"
+              :options="chartOptionsIndikator"
+              class="size-[20rem]"
+            />
+          </div>
+        </template>
+      </Dialog>
+    </div>
   </div>
 </template>
 
