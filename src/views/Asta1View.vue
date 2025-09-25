@@ -158,7 +158,7 @@ const setChartOptions = () => {
             return datasets.map((dataset, i) => {
               return {
                 text: dataset.label,
-                fillStyle: dataset.backgroundColor,
+                fillStyle: dataset.borderColor,
                 strokeStyle: dataset.borderColor,
                 lineWidth: 3, // << di sini kita paksa border legend tetap tipis
                 hidden: !chart.isDatasetVisible(i),
@@ -262,7 +262,15 @@ const setbarChartData = () => {
 
   // 2. Buat backgroundColor dan borderColor
   const backgroundColors = sorted.map((d) =>
-    d.label === "INDONESIA" ? "#f1c40f" : "#156082"
+    d.label === "INDONESIA"
+      ? "#f1c40f"
+      : selectedAspect.value.key === "demokrasi"
+      ? "#156082"
+      : selectedAspect.value.key === "sipil"
+      ? "#e97132"
+      : selectedAspect.value.key === "politik"
+      ? "#196b24"
+      : "#0f9ed5"
   );
   const borderColors = sorted.map((d) =>
     d.label === "INDONESIA" ? "#f1c40f" : "#156082"
@@ -446,8 +454,25 @@ function openDialog(item) {
     plugins: {
       legend: {
         labels: {
-          color: textColor,
+          generateLabels: (chart) => {
+            const datasets = chart.data.datasets;
+            return datasets.map((dataset, i) => {
+              return {
+                text: dataset.label,
+                fillStyle: dataset.borderColor,
+                strokeStyle: dataset.borderColor,
+                lineWidth: 1, // << di sini kita paksa border legend tetap tipis
+                hidden: !chart.isDatasetVisible(i),
+                datasetIndex: i,
+                fontColor: textColor,
+                fill: true,
+              };
+            });
+          },
         },
+        // labels: {
+        //   color: textColor,
+        // },
       },
       datalabels: {
         color: (context) => {
@@ -753,6 +778,7 @@ const setChartOptionsIndikator = () => {
   <div
     class="card rounded-xl !shadow-[5px_5px_10px_rgba(0,0,0,0.3)] dark:!shadow-[5px_5px_10px_rgba(52,211,153,0.3)] p-6 m-6 animate-fadeIn"
   >
+    {{ selectedAspect }}
     <h1 class="text-xl mb-6 text-center font-semibold">
       {{ selectedAspect.name }} menurut Provinsi
     </h1>
