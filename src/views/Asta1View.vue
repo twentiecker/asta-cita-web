@@ -372,6 +372,15 @@ const cards = ref(
 );
 
 function openDialog(item) {
+  const documentStyle = getComputedStyle(document.documentElement);
+  const textColor = documentStyle.getPropertyValue("--p-text-color");
+  const textColorSecondary = documentStyle.getPropertyValue(
+    "--p-text-muted-color"
+  );
+  const surfaceBorder = documentStyle.getPropertyValue(
+    "--p-content-border-color"
+  );
+
   selectedGrafik.value = item.fullData;
   chartDataIndikator.value = {
     labels: ["2021", "2022", "2023"], // bisa kamu generate dinamis juga
@@ -381,14 +390,105 @@ function openDialog(item) {
         data: item.fullData.pusat ?? [],
         borderColor: "#156082",
         fill: false,
+        tension: 0.3,
       },
       {
         label: "Provinsi",
         data: item.fullData.provinsi ?? [],
         borderColor: "#e97132",
         fill: false,
+        tension: 0.3,
       },
     ],
+    maxVal:
+      item.fullData.pusat && item.fullData.provinsi
+        ? Math.max(...item.fullData.pusat, ...item.fullData.provinsi)
+        : item.fullData.pusat && !item.fullData.provinsi
+        ? Math.max(...item.fullData.pusat)
+        : !item.fullData.pusat && item.fullData.provinsi
+        ? Math.max(...item.fullData.provinsi)
+        : 0,
+    minVal:
+      item.fullData.pusat && item.fullData.provinsi
+        ? Math.min(...item.fullData.pusat, ...item.fullData.provinsi)
+        : item.fullData.pusat && !item.fullData.provinsi
+        ? Math.min(...item.fullData.pusat)
+        : !item.fullData.pusat && item.fullData.provinsi
+        ? Math.min(...item.fullData.provinsi)
+        : 0,
+    rangeVal:
+      item.fullData.pusat &&
+      item.fullData.provinsi &&
+      Math.max(...item.fullData.pusat, ...item.fullData.provinsi) !==
+        Math.min(...item.fullData.pusat, ...item.fullData.provinsi)
+        ? (Math.max(...item.fullData.pusat, ...item.fullData.provinsi) -
+            Math.min(...item.fullData.pusat, ...item.fullData.provinsi)) /
+          4
+        : item.fullData.pusat &&
+          !item.fullData.provinsi &&
+          Math.max(...item.fullData.pusat) !==
+            Math.min(...item.fullData.pusat, ...item.fullData.provinsi)
+        ? (Math.max(...item.fullData.pusat) -
+            Math.min(...item.fullData.pusat, ...item.fullData.provinsi)) /
+          4
+        : !item.fullData.pusat &&
+          item.fullData.provinsi &&
+          Math.max(...item.fullData.provinsi) !==
+            Math.min(...item.fullData.provinsi)
+        ? (Math.max(...item.fullData.provinsi) -
+            Math.min(...item.fullData.provinsi)) /
+          4
+        : 1,
+  };
+  chartOptionsIndikator.value = {
+    maintainAspectRatio: false,
+    aspectRatio: 0.6,
+    plugins: {
+      legend: {
+        labels: {
+          color: textColor,
+        },
+      },
+      datalabels: {
+        color: (context) => {
+          return context.dataset.borderColor; // ikut warna garis dataset
+        },
+        anchor: "end", // posisinya relatif ke titik (end = atas)
+        align: "end", // geser keluar ke atas
+        offset: 4, // kasih jarak biar ga nabrak titik
+        font: {
+          weight: "bold",
+        },
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: textColorSecondary,
+        },
+        grid: {
+          display: false,
+          drawBorder: true,
+        },
+        border: {
+          display: true,
+          color: surfaceBorder, // warna garis bawah
+          width: 2,
+        },
+      },
+      y: {
+        ticks: {
+          display: false,
+        },
+        grid: {
+          display: false,
+        },
+        max:
+          chartDataIndikator.value.maxVal + chartDataIndikator.value.rangeVal,
+        min:
+          chartDataIndikator.value.minVal - chartDataIndikator.value.rangeVal,
+      },
+    },
   };
   visible.value = true;
 }
@@ -402,19 +502,21 @@ const setChartDataIndikator = () => {
     datasets: [
       {
         label: "Pusat",
-        data: [47.13, 88.51, 70.11],
+        data: [],
         borderColor: "#156082",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         tension: 0.3,
       },
       {
         label: "Provinsi",
-        data: [84, 80.63, 84.87],
+        data: [],
         borderColor: "#e97132",
         backgroundColor: "rgba(255, 99, 132, 0.2)",
         tension: 0.3,
       },
     ],
+    maxVal: 0,
+    minVal: 0,
   };
 };
 
@@ -471,6 +573,8 @@ const setChartOptionsIndikator = () => {
         grid: {
           display: false,
         },
+        max: 100,
+        min: 0,
       },
     },
   };
@@ -479,7 +583,9 @@ const setChartOptionsIndikator = () => {
 
 <template>
   <!-- Panel Prioritas Nasional -->
-  <div class="card rounded-xl shadow-md m-6 mb-6 animate-fadeIn">
+  <div
+    class="card rounded-xl !shadow-[5px_5px_10px_rgba(0,0,0,0.3)] dark:!shadow-[5px_5px_10px_rgba(52,211,153,0.3)] m-6 mb-6 animate-fadeIn"
+  >
     <Panel
       header="Prioritas Nasional 1"
       toggleable
@@ -506,7 +612,7 @@ const setChartOptionsIndikator = () => {
     <Card
       v-for="(item, index) in indikatorCards"
       :key="index"
-      class="hover:shadow-xl hover:scale-[1.02] transition-all duration-300 rounded-xl"
+      class="hover:shadow-xl hover:scale-[1.02] transition-all duration-300 rounded-xl !shadow-[5px_5px_10px_rgba(0,0,0,0.3)] dark:!shadow-[5px_5px_10px_rgba(52,211,153,0.3)]"
       pt:body:class="h-full flex flex-col justify-between"
     >
       <template #subtitle>
@@ -567,7 +673,9 @@ const setChartOptionsIndikator = () => {
   </div>
 
   <!-- Chart Line -->
-  <div class="card rounded-xl shadow-md p-6 mb-6 animate-fadeIn">
+  <div
+    class="card rounded-xl !shadow-[5px_5px_10px_rgba(0,0,0,0.3)] dark:!shadow-[5px_5px_10px_rgba(52,211,153,0.3)] p-6 m-6 animate-fadeIn"
+  >
     <h1 class="text-xl mb-6 text-center font-semibold">
       Indeks Demokrasi Indonesia dan Aspek Demokrasi
     </h1>
@@ -642,7 +750,9 @@ const setChartOptionsIndikator = () => {
   </div>
 
   <!-- Chart Bar -->
-  <div class="card rounded-xl shadow-md p-6 mb-6 animate-fadeIn">
+  <div
+    class="card rounded-xl !shadow-[5px_5px_10px_rgba(0,0,0,0.3)] dark:!shadow-[5px_5px_10px_rgba(52,211,153,0.3)] p-6 m-6 animate-fadeIn"
+  >
     <h1 class="text-xl mb-6 text-center font-semibold">
       {{ selectedAspect.name }} menurut Provinsi
     </h1>
@@ -729,8 +839,7 @@ const setChartOptionsIndikator = () => {
       <Card
         v-for="(item, index) in cards"
         :key="index"
-        @click="openDialog(item)"
-        class="cursor-pointer hover:shadow-xl hover:scale-[1.03] transition-transform duration-300 rounded-xl w-full sm:w-[calc(50%-1.5rem)] lg:w-[calc(20%-1.5rem)]"
+        class="!shadow-[5px_5px_10px_rgba(0,0,0,0.3)] dark:!shadow-[5px_5px_10px_rgba(52,211,153,0.3)] hover:shadow-xl hover:scale-[1.03] transition-transform duration-300 rounded-xl w-full sm:w-[calc(50%-1.5rem)] lg:w-[calc(20%-1.5rem)]"
         :class="
           (!item.pusat && item.growthProv === 0.0) ||
           (item.growthPusat === 0.0 && !item.provinsi) ||
@@ -770,8 +879,10 @@ const setChartOptionsIndikator = () => {
           >
         </template>
         <template #content class="h-full">
-          <div class="relative flex justify-around mt-3 text-center lg:static">
-            <div v-if="item.pusat" class="mr-10 lg:m-0">
+          <div
+            class="relative flex justify-around items-center mt-3 text-center lg:static"
+          >
+            <div v-if="item.pusat">
               <h1
                 class="font-medium"
                 :class="
@@ -840,7 +951,7 @@ const setChartOptionsIndikator = () => {
                 </p>
               </span>
             </div>
-            <div v-if="item.provinsi" class="ml-10 lg:m-0">
+            <div v-if="item.provinsi">
               <h1
                 class="font-medium"
                 :class="
@@ -910,10 +1021,36 @@ const setChartOptionsIndikator = () => {
               </span>
             </div>
             <i
-              :class="item.icon"
+              v-if="item.pusat && item.provinsi"
               class="absolute lg:static lg:!hidden"
-              style="font-size: 2rem"
+              :class="
+                (!item.pusat && item.growthProv === 0.0) ||
+                (item.growthPusat === 0.0 && !item.provinsi) ||
+                (item.growthPusat === 0.0 && item.growthProv === 0.0)
+                  ? item.icon
+                  : (item.isUpPusat && item.isUpProv) ||
+                    (!item.pusat && item.isUpProv) ||
+                    (!item.isUpPusat && item.isUpProv) ||
+                    (item.isUpPusat && !item.isUpProv) ||
+                    (!item.isUpPusat && !item.isUpProv) ||
+                    (!item.pusat && !item.isUpProv)
+                  ? item.icon + ' text-black'
+                  : item.icon
+              "
+              style="font-size: 2.5rem"
             ></i>
+          </div>
+          <div class="flex justify-end">
+            <Button
+              icon="pi pi-chart-line"
+              label="Chart"
+              severity="help"
+              raised
+              aria-label="User"
+              class="mt-4"
+              size="small"
+              @click="openDialog(item)"
+            />
           </div>
         </template>
       </Card>

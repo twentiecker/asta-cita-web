@@ -912,7 +912,7 @@ const allIndikator = {
     label: "Terjaminnya kebebasan berkeyakinan",
     pusat: [100, 92.34, 77.01],
     provinsi: [88.41, 86.15, 82.94],
-    icon: "pi pi-prime",
+    icon: "pi pi-compass",
   },
   grafik4: {
     label:

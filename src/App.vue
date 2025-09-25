@@ -1,6 +1,6 @@
 <template>
   <div
-    class="card mx-6 pl-4 py-3 sticky top-0 z-50 bg-[var(--p-panel-background)] m-2 rounded-lg"
+    class="card mx-6 mb-12 pl-4 py-3 sticky top-0 z-50 bg-[var(--p-panel-background)] m-2 rounded-lg !shadow-[5px_5px_10px_rgba(0,0,0,0.3)] dark:!shadow-[5px_5px_10px_rgba(52,211,153,0.3)]"
   >
     <Drawer v-model:visible="visible">
       <template #container="{ closeCallback }">

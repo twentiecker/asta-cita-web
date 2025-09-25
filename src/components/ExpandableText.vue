@@ -13,13 +13,14 @@ const isShowMore = ref(false);
 
 <template>
   <Card
-    class="hover:shadow-xl hover:scale-[1.02] transition-all duration-300 rounded-xl"
+    class="hover:shadow-xl hover:scale-[1.02] transition-all duration-300 rounded-xl !shadow-[5px_5px_10px_rgba(0,0,0,0.3)] dark:dark:!shadow-[5px_5px_10px_rgba(52,211,153,0.5)]"
   >
     <!-- Summary -->
     <template #subtitle>
       <p class="font-semibold leading-[1.4]">{{ summary }}</p>
       <Button
         label="[Show More]"
+        size="small"
         severity="info"
         variant="text"
         @click="isShowMore = true"
@@ -36,6 +37,7 @@ const isShowMore = ref(false);
         </div>
         <Button
           label="[Show Less]"
+          size="small"
           severity="info"
           variant="text"
           @click="isShowMore = false"
