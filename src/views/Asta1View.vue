@@ -778,7 +778,6 @@ const setChartOptionsIndikator = () => {
   <div
     class="card rounded-xl !shadow-[5px_5px_10px_rgba(0,0,0,0.3)] dark:!shadow-[5px_5px_10px_rgba(52,211,153,0.3)] p-6 m-6 animate-fadeIn"
   >
-    {{ selectedAspect }}
     <h1 class="text-xl mb-6 text-center font-semibold">
       {{ selectedAspect.name }} menurut Provinsi
     </h1>
