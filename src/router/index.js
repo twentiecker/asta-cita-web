@@ -1,13 +1,18 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Asta1View from "../views/Asta1View.vue";
+import EkonomiView from "../views/EkonomiView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: "/",
+      name: "ekonomi",
+      component: EkonomiView,
+    },
+    {
+      path: "/asta1",
       name: "asta1",
-      component: Asta1View,
+      component: () => import("../views/Asta1View.vue"),
     },
     {
       path: "/about",
